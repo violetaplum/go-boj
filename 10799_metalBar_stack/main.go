@@ -4,19 +4,38 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 )
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	command := scanner.Text()
-	commands := strings.Split(command, "")
-	st := []string{}
+	reader := bufio.NewReader(os.Stdin)
+	writer := bufio.NewWriter(os.Stdout)
+	defer writer.Flush()
+
+	str, _ := reader.ReadString('\n')
+	str = str[:len(str)-1] // 개행문자 제거
+
+	st := make([]byte, 0, len(str))
+
 	count := 0
 	top := -1
-	for i, v := range commands {
-
+	laser := false
+	for _, v := range str {
+		if v == '(' {
+			st = append(st, '(')
+			top++
+			laser = true
+		} else if v == ')' {
+			if laser {
+				st = st[:len(st)-1]
+				top--
+				count += len(st)
+			} else {
+				st = st[:top]
+				count += 1
+				top--
+			}
+			laser = false
+		}
 	}
-	fmt.Println(count)
+	fmt.Fprint(writer, count)
 }
