@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Point는 그림에서의 좌표를 나타냅니다
@@ -21,19 +22,19 @@ func main() {
 
 	// N, M 입력 받기
 	scanner.Scan()
-	N := parseInt(scanner.Text())
+	n, _ := strconv.Atoi(scanner.Text())
 	scanner.Scan()
-	M := parseInt(scanner.Text())
+	m, _ := strconv.Atoi(scanner.Text())
 
 	// 그림 정보 입력 받기
-	picture := make([][]int, N)
-	visited := make([][]bool, N)
+	picture := make([][]int, n)
+	visited := make([][]bool, n)
 	for i := range picture {
-		picture[i] = make([]int, M)
-		visited[i] = make([]bool, M)
+		picture[i] = make([]int, m)
+		visited[i] = make([]bool, m)
 		for j := range picture[i] {
 			scanner.Scan()
-			picture[i][j] = parseInt(scanner.Text())
+			picture[i][j], _ = strconv.Atoi(scanner.Text())
 		}
 	}
 
@@ -41,10 +42,10 @@ func main() {
 	maxPicture := 0
 
 	// 모든 좌표에 대해 BFS 수행
-	for row := 0; row < N; row++ {
-		for col := 0; col < M; col++ {
+	for row := 0; row < n; row++ {
+		for col := 0; col < m; col++ {
 			if picture[row][col] == 1 && !visited[row][col] {
-				cnt := BFS(Point{row, col}, N, M, picture, visited)
+				cnt := BFS(Point{row, col}, n, m, picture, visited)
 				pictureCnt++
 				if cnt > maxPicture {
 					maxPicture = cnt
@@ -58,7 +59,7 @@ func main() {
 }
 
 // BFS 함수 구현
-func BFS(start Point, N, M int, picture [][]int, visited [][]bool) int {
+func BFS(start Point, n, m int, picture [][]int, visited [][]bool) int {
 	cnt := 0
 	queue := []Point{start}
 	visited[start.y][start.x] = true
@@ -75,7 +76,7 @@ func BFS(start Point, N, M int, picture [][]int, visited [][]bool) int {
 			nx := current.x + dx[i]
 
 			// 범위 체크 및 방문 조건 확인
-			if ny >= 0 && ny < N && nx >= 0 && nx < M {
+			if ny >= 0 && ny < n && nx >= 0 && nx < m {
 				if !visited[ny][nx] && picture[ny][nx] == 1 {
 					visited[ny][nx] = true
 					queue = append(queue, Point{ny, nx})
@@ -85,11 +86,4 @@ func BFS(start Point, N, M int, picture [][]int, visited [][]bool) int {
 	}
 
 	return cnt
-}
-
-// 문자열을 정수로 변환하는 헬퍼 함수
-func parseInt(s string) int {
-	var n int
-	fmt.Sscanf(s, "%d", &n)
-	return n
 }
